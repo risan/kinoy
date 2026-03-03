@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, useAttrs, type Component } from 'vue';
+import { computed, ref, type Component } from 'vue';
 import type { AlertProps } from '../types/form';
 import IconXMark from '../icons/IconXMark.vue';
 import IconCircleInfo from '../icons/IconCircleInfo.vue';
@@ -11,8 +11,6 @@ defineOptions({
   name: 'KAlert',
   inheritAttrs: false,
 });
-
-const attrs = useAttrs();
 
 const props = withDefaults(defineProps<AlertProps>(), {
   variant: 'default',
@@ -65,7 +63,7 @@ function handleClose() {
 </script>
 
 <template>
-  <div v-if="visible" v-bind="attrs" role="alert" :class="[baseClasses, variantClasses]">
+  <div v-if="visible" v-bind="$attrs" role="alert" :class="[baseClasses, variantClasses]">
     <span
       data-testid="alert-icon"
       aria-hidden="true"

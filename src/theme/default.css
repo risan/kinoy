@@ -154,4 +154,8 @@
 
   --color-alert-close: #64748b;
   --color-alert-close-hover: #ef4444;
+
+  /* Misc interactive tokens */
+  --color-input-clear-bg-hover: #fee2e2;
+  --color-input-file-hover: #f8fafc;
 }

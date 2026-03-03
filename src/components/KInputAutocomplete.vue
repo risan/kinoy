@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch, useId, onBeforeUnmount, nextTick } from 'vue';
-import { useField } from 'vee-validate';
+import { computed, ref, watch, onBeforeUnmount, nextTick } from 'vue';
 import { useElementBounding } from '@vueuse/core';
 import type { InputAutocompleteProps, AutocompleteOption } from '../types/form';
+import { useFormField } from '../composables/useFormField';
 import KLoading from './KLoading.vue';
 
 defineOptions({
@@ -24,12 +24,9 @@ const emit = defineEmits<{
   select: [value: string, option: AutocompleteOption];
 }>();
 
-// ── IDs ──────────────────────────────────────────────────
+// ── Form field ───────────────────────────────────────────
 
-const generatedId = useId();
-const inputId = computed(() => props.id ?? generatedId);
-const errorId = computed(() => `${inputId.value}-error`);
-const hintId = computed(() => `${inputId.value}-hint`);
+const { inputId, errorId, hintId, field, resolvedError, ariaDescribedBy } = useFormField(props);
 const listboxId = computed(() => `${inputId.value}-listbox`);
 
 // ── Refs ─────────────────────────────────────────────────
@@ -38,9 +35,7 @@ const rootRef = ref<HTMLElement | null>(null);
 const inputRef = ref<HTMLInputElement | null>(null);
 const listboxRef = ref<HTMLElement | null>(null);
 
-// ── vee-validate ─────────────────────────────────────────
-
-const field = props.name != null ? useField<string>(() => props.name!) : undefined;
+// ── vee-validate helpers ─────────────────────────────────
 
 const inputValue = computed(() => (field ? (field.value.value ?? '') : (props.modelValue ?? '')));
 
@@ -55,22 +50,6 @@ function updateValue(newValue: string) {
 function onBlur() {
   field?.handleBlur();
 }
-
-const resolvedError = computed(() => props.error || field?.errorMessage.value || undefined);
-
-const ariaDescribedBy = computed(() => {
-  const ids: string[] = [];
-
-  if (props.hint) {
-    ids.push(hintId.value);
-  }
-
-  if (resolvedError.value) {
-    ids.push(errorId.value);
-  }
-
-  return ids.length > 0 ? ids.join(' ') : undefined;
-});
 
 // ── Search state ─────────────────────────────────────────
 
@@ -345,46 +324,61 @@ watch(options, () => {
         >
       </div>
 
-      <div
-        v-show="showDropdown"
-        :id="listboxId"
-        ref="listboxRef"
-        role="listbox"
-        class="absolute z-50 w-full overflow-auto rounded-input border border-select-dropdown-border bg-select-dropdown-bg shadow-select-dropdown"
-        :class="[dropdownPlacement === 'above' ? 'bottom-full mb-1' : 'top-full mt-1']"
-        :style="{ maxHeight: `${DROPDOWN_MAX_HEIGHT}px` }"
-        @mousedown.prevent
+      <Transition
+        enter-active-class="transition duration-100 ease-out"
+        enter-from-class="scale-95 opacity-0"
+        enter-to-class="scale-100 opacity-100"
+        leave-active-class="transition duration-75 ease-in"
+        leave-from-class="scale-100 opacity-100"
+        leave-to-class="scale-95 opacity-0"
       >
-        <div v-if="loading" class="flex items-center gap-2 px-input-x py-3">
-          <KLoading size="xs" color="muted" label="Searching" />
-          <span class="text-input text-input-placeholder">Searching...</span>
-        </div>
+        <div
+          v-show="showDropdown"
+          :id="listboxId"
+          ref="listboxRef"
+          role="listbox"
+          class="absolute z-50 w-full overflow-auto rounded-input border border-select-dropdown-border bg-select-dropdown-bg shadow-select-dropdown"
+          :class="[
+            dropdownPlacement === 'above'
+              ? 'bottom-full mb-1 origin-bottom'
+              : 'top-full mt-1 origin-top',
+          ]"
+          :style="{ maxHeight: `${DROPDOWN_MAX_HEIGHT}px` }"
+          @mousedown.prevent
+        >
+          <div v-if="loading" class="flex items-center gap-2 px-input-x py-3">
+            <KLoading size="xs" color="muted" label="Searching" />
+            <span class="text-input text-input-placeholder">Searching...</span>
+          </div>
 
-        <ul v-else-if="options.length > 0" class="py-1">
-          <li
-            v-for="(option, idx) in options"
-            :id="`${listboxId}-option-${idx}`"
-            :key="idx"
-            role="option"
-            :aria-selected="highlightedIndex === idx"
-            :data-highlighted="highlightedIndex === idx || undefined"
-            class="cursor-pointer px-input-x py-1.5 text-input transition-colors duration-75"
-            :class="[
-              highlightedIndex === idx ? 'bg-select-option-hover' : 'hover:bg-select-option-hover',
-            ]"
-            @mousedown.prevent="selectOption(option)"
-            @mouseenter="highlightedIndex = idx"
-          >
-            <slot name="option" :option="option">
-              {{ resolveLabel(option) }}
-            </slot>
-          </li>
-        </ul>
+          <ul v-else-if="options.length > 0" class="py-1">
+            <li
+              v-for="(option, idx) in options"
+              :id="`${listboxId}-option-${idx}`"
+              :key="idx"
+              role="option"
+              :aria-selected="highlightedIndex === idx"
+              :data-highlighted="highlightedIndex === idx || undefined"
+              class="cursor-pointer px-input-x py-1.5 text-input transition-colors duration-75"
+              :class="[
+                highlightedIndex === idx
+                  ? 'bg-select-option-hover'
+                  : 'hover:bg-select-option-hover',
+              ]"
+              @mousedown.prevent="selectOption(option)"
+              @mouseenter="highlightedIndex = idx"
+            >
+              <slot name="option" :option="option">
+                {{ resolveLabel(option) }}
+              </slot>
+            </li>
+          </ul>
 
-        <div v-else class="px-input-x py-3 text-center text-input text-input-placeholder">
-          {{ hasSearched ? noResultsText : helpText }}
+          <div v-else class="px-input-x py-3 text-center text-input text-input-placeholder">
+            {{ hasSearched ? noResultsText : helpText }}
+          </div>
         </div>
-      </div>
+      </Transition>
     </div>
 
     <p v-if="hint" :id="hintId" class="text-input-caption text-input-placeholder">

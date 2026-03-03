@@ -32,6 +32,8 @@ const colorClass = computed(() => {
   };
   return map[props.color];
 });
+
+// Spinner SVG is intentionally duplicated: overlay needs <div> wrapper, inline needs <span>
 </script>
 
 <template>
