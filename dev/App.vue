@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
+import type { AddressData } from '../src/types/form';
 
 // ── Standalone refs ──
 const text = ref('');
@@ -24,6 +25,14 @@ const selectedNoSearch = ref(null);
 const selectedHideClear = ref(null);
 const selectedObject = ref(null);
 const date = ref<Date | null>(null);
+const placeValue = ref('');
+const placeStreetOnly = ref('');
+const placeApiKey = ref('');
+const placeAddress = ref<AddressData | null>(null);
+
+function onSelectAddress(data: AddressData) {
+  placeAddress.value = data;
+}
 
 const countryOptions = [
   { value: 'us', label: 'United States' },
@@ -428,6 +437,59 @@ const onSubmit = handleSubmit((values) => {
 
       <h3 class="text-sm font-medium text-gray-400">No accept filter</h3>
       <KInputFile label="Any File" hint="All file types accepted" />
+    </section>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!--  KInputPlace                                      -->
+    <!-- ════════════════════════════════════════════════ -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-semibold">KInputPlace</h2>
+
+      <KInput v-model="placeApiKey" label="Google Maps API Key" placeholder="Paste your API key here" hint="Required for Places autocomplete to work" />
+
+      <h3 class="text-sm font-medium text-gray-400">Default (full address)</h3>
+      <KInputPlace
+        v-model="placeValue"
+        :api-key="placeApiKey"
+        label="Address"
+        placeholder="Start typing an address..."
+        @select-address="onSelectAddress"
+      />
+      <p class="text-sm text-gray-500">Value: {{ placeValue }}</p>
+      <p v-if="placeAddress" class="text-sm text-gray-500">
+        Address: {{ JSON.stringify(placeAddress) }}
+      </p>
+
+      <h3 class="text-sm font-medium text-gray-400">streetAddressOnly</h3>
+      <KInputPlace
+        v-model="placeStreetOnly"
+        :api-key="placeApiKey"
+        label="Street Address"
+        placeholder="Start typing..."
+        street-address-only
+      />
+      <p class="text-sm text-gray-500">Value: {{ placeStreetOnly }}</p>
+
+      <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
+      <KInputPlace label="Address (disabled)" placeholder="Cannot type here" disabled />
+
+      <h3 class="text-sm font-medium text-gray-400">With error + required</h3>
+      <KInputPlace
+        :api-key="placeApiKey"
+        label="Address"
+        placeholder="Start typing..."
+        error="Address is required"
+        required
+      />
+
+      <h3 class="text-sm font-medium text-gray-400">With hint</h3>
+      <KInputPlace
+        :api-key="placeApiKey"
+        label="Shipping Address"
+        placeholder="Start typing..."
+        hint="US addresses only"
+        :included-region-codes="['us']"
+      />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->

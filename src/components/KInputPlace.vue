@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import KInputAutocomplete from './KInputAutocomplete.vue';
 import type { InputPlaceProps, AddressData, AutocompleteOption } from '../types/form';
@@ -23,6 +23,7 @@ const emit = defineEmits<{
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let places: any;
+const ready = ref(false);
 const loadingLibrary = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sessionToken = ref<any>(null);
@@ -102,18 +103,21 @@ function onUpdateModelValue(value: string) {
   emit('update:modelValue', value);
 }
 
-onMounted(async () => {
+async function loadLibrary() {
+  if (places) {
+    return;
+  }
+
+  if (!window.google?.maps && !props.apiKey) {
+    return;
+  }
+
   loadingLibrary.value = true;
 
   try {
     if (!window.google?.maps) {
-      if (!props.apiKey) {
-        console.warn('[KInputPlace] apiKey prop is required when Google Maps is not pre-loaded.');
-        return;
-      }
-
       setOptions({
-        key: props.apiKey,
+        key: props.apiKey!,
         v: 'weekly',
       });
     }
@@ -125,12 +129,26 @@ onMounted(async () => {
     }
 
     sessionToken.value = new places.AutocompleteSessionToken();
+    ready.value = true;
   } finally {
     if (isMounted) {
       loadingLibrary.value = false;
     }
   }
+}
+
+onMounted(() => {
+  loadLibrary();
 });
+
+watch(
+  () => props.apiKey,
+  (key) => {
+    if (key && !places) {
+      loadLibrary();
+    }
+  },
+);
 
 onBeforeUnmount(() => {
   isMounted = false;
@@ -145,7 +163,7 @@ onBeforeUnmount(() => {
     :label="label"
     :hint="hint"
     :error="error"
-    :disabled="disabled || loadingLibrary"
+    :disabled="disabled || !ready"
     :required="required"
     :model-value="modelValue"
     :search="searchPlaces"

@@ -128,6 +128,39 @@ describe('KInputPlace', () => {
       expect(wrapper.find('input').attributes('disabled')).toBeDefined();
     });
 
+    it('does not warn and waits when apiKey is not yet provided', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const wrapper = mount(KInputPlace, {
+        props: { modelValue: '' },
+      });
+      await flushPromises();
+
+      expect(warn).not.toHaveBeenCalled();
+      expect(mockImportLibrary).not.toHaveBeenCalled();
+      expect(wrapper.find('input').attributes('disabled')).toBeDefined();
+      warn.mockRestore();
+    });
+
+    it('loads library when apiKey prop becomes available', async () => {
+      const mockPlaces = createMockPlaces();
+      mockImportLibrary.mockResolvedValue(mockPlaces);
+
+      const wrapper = mount(KInputPlace, {
+        props: { modelValue: '' },
+      });
+      await flushPromises();
+
+      expect(mockImportLibrary).not.toHaveBeenCalled();
+      expect(wrapper.find('input').attributes('disabled')).toBeDefined();
+
+      await wrapper.setProps({ apiKey: 'test-key' });
+      await flushPromises();
+
+      expect(mockSetOptions).toHaveBeenCalledWith({ key: 'test-key', v: 'weekly' });
+      expect(mockImportLibrary).toHaveBeenCalledWith('places');
+      expect(wrapper.find('input').attributes('disabled')).toBeUndefined();
+    });
+
     it('enables input after library loads', async () => {
       const mockPlaces = createMockPlaces();
       mockImportLibrary.mockResolvedValue(mockPlaces);
