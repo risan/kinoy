@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+@import '@vuepic/vue-datepicker/dist/main.css';
+@import '../src/theme/default.css';
+@import '../src/theme/datepicker.css';
+@source "../src";
