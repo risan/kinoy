@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch, useId, nextTick } from 'vue';
-import { useField } from 'vee-validate';
+import { computed, ref, watch, nextTick } from 'vue';
 import type { SelectProps, SelectOption, SelectOptionValue, SelectModelValue } from '../types/form';
+import { useFormField } from '../composables/useFormField';
 import { useSelectOptions } from '../composables/useSelectOptions';
 import { useSelectDropdown } from '../composables/useSelectDropdown';
 import { useSelectKeyboard } from '../composables/useSelectKeyboard';
@@ -31,18 +31,14 @@ const emit = defineEmits<{
   search: [query: string];
 }>();
 
-const generatedId = useId();
-const inputId = computed(() => props.id ?? generatedId);
-const errorId = computed(() => `${inputId.value}-error`);
-const hintId = computed(() => `${inputId.value}-hint`);
+const { inputId, errorId, hintId, field, resolvedError, ariaDescribedBy } =
+  useFormField<SelectModelValue>(props);
 const listboxId = computed(() => `${inputId.value}-listbox`);
 
 const rootRef = ref<HTMLElement | null>(null);
 const triggerRef = ref<HTMLElement | null>(null);
 const searchInputRef = ref<HTMLInputElement | null>(null);
 const listboxRef = ref<HTMLElement | null>(null);
-
-const field = props.name != null ? useField<SelectModelValue>(() => props.name!) : undefined;
 
 function getDefault(): SelectModelValue {
   return props.mode === 'single' ? null : [];
@@ -51,19 +47,6 @@ function getDefault(): SelectModelValue {
 const currentValue = computed<SelectModelValue>(() => {
   const val = field ? field.value.value : props.modelValue;
   return val ?? getDefault();
-});
-
-const resolvedError = computed(() => props.error || field?.errorMessage.value || undefined);
-
-const ariaDescribedBy = computed(() => {
-  const ids: string[] = [];
-  if (props.hint) {
-    ids.push(hintId.value);
-  }
-  if (resolvedError.value) {
-    ids.push(errorId.value);
-  }
-  return ids.length > 0 ? ids.join(' ') : undefined;
 });
 
 function updateValue(newValue: SelectModelValue) {
@@ -440,6 +423,7 @@ defineExpose({ clear });
             ref="searchInputRef"
             v-model="searchQuery"
             type="text"
+            aria-label="Search options"
             class="min-w-0 flex-1 bg-transparent text-input text-input-text placeholder:text-input-placeholder outline-none"
             :placeholder="displayText || placeholder"
             autocomplete="off"
@@ -484,6 +468,7 @@ defineExpose({ clear });
               ref="searchInputRef"
               v-model="searchQuery"
               type="text"
+              aria-label="Search options"
               class="min-w-[3rem] flex-1 bg-transparent text-input text-input-text placeholder:text-input-placeholder outline-none"
               :placeholder="selectedValues.length === 0 ? placeholder : ''"
               :disabled="disabled || undefined"
@@ -502,7 +487,7 @@ defineExpose({ clear });
             v-if="showClear"
             type="button"
             aria-label="Clear selection"
-            class="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-input-placeholder transition-colors duration-150 hover:bg-red-100 hover:text-input-error"
+            class="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-input-placeholder transition-colors duration-150 hover:bg-input-clear-bg-hover hover:text-input-error"
             tabindex="-1"
             @click.stop="clear"
             @mousedown.prevent
@@ -510,6 +495,7 @@ defineExpose({ clear });
             <IconXMark class="h-3.5 w-3.5" />
           </button>
           <IconChevronDown
+            aria-hidden="true"
             :class="[
               'h-3.5 w-3.5 text-input-placeholder transition-transform duration-150',
               { 'rotate-180': isOpen },
@@ -518,90 +504,107 @@ defineExpose({ clear });
         </div>
       </div>
 
-      <div
-        v-show="isOpen"
-        :id="listboxId"
-        ref="listboxRef"
-        role="listbox"
-        :aria-multiselectable="isMultiMode || undefined"
-        class="absolute z-50 w-full overflow-auto rounded-input border border-select-dropdown-border bg-select-dropdown-bg shadow-select-dropdown"
-        :class="[dropdownPlacement === 'above' ? 'bottom-full mb-1' : 'top-full mt-1']"
-        :style="{ maxHeight: dropdownMaxHeight }"
+      <Transition
+        enter-active-class="transition duration-100 ease-out"
+        enter-from-class="scale-95 opacity-0"
+        enter-to-class="scale-100 opacity-100"
+        leave-active-class="transition duration-75 ease-in"
+        leave-from-class="scale-100 opacity-100"
+        leave-to-class="scale-95 opacity-0"
       >
         <div
-          v-if="!disableSearch && mode === 'multiple'"
-          class="sticky top-0 border-b border-select-dropdown-border bg-select-dropdown-bg p-1.5"
+          v-show="isOpen"
+          :id="listboxId"
+          ref="listboxRef"
+          role="listbox"
+          :aria-multiselectable="isMultiMode || undefined"
+          class="absolute z-50 w-full overflow-auto rounded-input border border-select-dropdown-border bg-select-dropdown-bg shadow-select-dropdown"
+          :class="[
+            dropdownPlacement === 'above'
+              ? 'bottom-full mb-1 origin-bottom'
+              : 'top-full mt-1 origin-top',
+          ]"
+          :style="{ maxHeight: dropdownMaxHeight }"
         >
-          <input
-            ref="searchInputRef"
-            v-model="searchQuery"
-            type="text"
-            class="w-full rounded-md border border-input-border bg-input-bg px-2 py-1 text-input text-input-text placeholder:text-input-placeholder outline-none focus:border-input-border-focus"
-            placeholder="Search..."
-            autocomplete="off"
-            @keydown="onKeydown"
-          />
-        </div>
+          <div
+            v-if="!disableSearch && mode === 'multiple'"
+            class="sticky top-0 border-b border-select-dropdown-border bg-select-dropdown-bg p-1.5"
+          >
+            <input
+              ref="searchInputRef"
+              v-model="searchQuery"
+              type="text"
+              aria-label="Search options"
+              class="w-full rounded-md border border-input-border bg-input-bg px-2 py-1 text-input text-input-text placeholder:text-input-placeholder outline-none focus:border-input-border-focus"
+              placeholder="Search..."
+              autocomplete="off"
+              @keydown="onKeydown"
+            />
+          </div>
 
-        <ul class="py-1">
-          <template v-for="(group, gi) in groupedOptions" :key="group.label ?? `__ungrouped_${gi}`">
-            <li
-              v-if="isGrouped && group.label != null"
-              role="presentation"
-              class="px-input-x py-1.5 text-xs font-semibold tracking-wide text-input-placeholder uppercase select-none"
+          <ul class="py-1">
+            <template
+              v-for="(group, gi) in groupedOptions"
+              :key="group.label ?? `__ungrouped_${gi}`"
             >
-              <slot name="group-label" :group="group.label" :options="group.options">
-                {{ group.label }}
-              </slot>
-            </li>
-            <li
-              v-for="(option, oi) in group.options"
-              :id="`${listboxId}-option-${group.startIndex + oi}`"
-              :key="String(resolveValue(option))"
-              role="option"
-              :aria-selected="isSelected(option)"
-              :data-highlighted="highlightedIndex === group.startIndex + oi || undefined"
-              class="cursor-pointer px-input-x py-1.5 text-input transition-colors duration-75"
-              :class="[
-                highlightedIndex === group.startIndex + oi
-                  ? 'bg-select-option-hover'
-                  : isSelected(option)
-                    ? 'bg-select-option-selected'
-                    : 'hover:bg-select-option-hover',
-              ]"
-              @mousedown.prevent="selectOption(option)"
-              @mouseenter="highlightedIndex = group.startIndex + oi"
-            >
-              <slot name="option" :option="option" :selected="isSelected(option)">
-                {{ resolveText(option) }}
-              </slot>
-            </li>
-          </template>
-        </ul>
+              <li
+                v-if="isGrouped && group.label != null"
+                role="presentation"
+                class="px-input-x py-1.5 text-xs font-semibold tracking-wide text-input-placeholder uppercase select-none"
+              >
+                <slot name="group-label" :group="group.label" :options="group.options">
+                  {{ group.label }}
+                </slot>
+              </li>
+              <li
+                v-for="(option, oi) in group.options"
+                :id="`${listboxId}-option-${group.startIndex + oi}`"
+                :key="String(resolveValue(option))"
+                role="option"
+                :aria-selected="isSelected(option)"
+                :data-highlighted="highlightedIndex === group.startIndex + oi || undefined"
+                class="cursor-pointer px-input-x py-1.5 text-input transition-colors duration-75"
+                :class="[
+                  highlightedIndex === group.startIndex + oi
+                    ? 'bg-select-option-hover'
+                    : isSelected(option)
+                      ? 'bg-select-option-selected'
+                      : 'hover:bg-select-option-hover',
+                ]"
+                @mousedown.prevent="selectOption(option)"
+                @mouseenter="highlightedIndex = group.startIndex + oi"
+              >
+                <slot name="option" :option="option" :selected="isSelected(option)">
+                  {{ resolveText(option) }}
+                </slot>
+              </li>
+            </template>
+          </ul>
 
-        <div
-          v-if="filteredOptions.length === 0"
-          class="px-input-x py-3 text-center text-input text-input-placeholder"
-        >
-          <template v-if="canCreateFromQuery">
-            Press
-            <kbd
-              class="rounded border border-input-border bg-input-bg px-1 py-0.5 text-xs font-semibold"
-              >Tab</kbd
-            >
-            or
-            <kbd
-              class="rounded border border-input-border bg-input-bg px-1 py-0.5 text-xs font-semibold"
-              >Enter</kbd
-            >
-            to add "<span class="font-medium text-input-text">{{ searchQuery.trim() }}</span
-            >"
-          </template>
-          <template v-else>
-            {{ emptyText }}
-          </template>
+          <div
+            v-if="filteredOptions.length === 0"
+            class="px-input-x py-3 text-center text-input text-input-placeholder"
+          >
+            <template v-if="canCreateFromQuery">
+              Press
+              <kbd
+                class="rounded border border-input-border bg-input-bg px-1 py-0.5 text-xs font-semibold"
+                >Tab</kbd
+              >
+              or
+              <kbd
+                class="rounded border border-input-border bg-input-bg px-1 py-0.5 text-xs font-semibold"
+                >Enter</kbd
+              >
+              to add "<span class="font-medium text-input-text">{{ searchQuery.trim() }}</span
+              >"
+            </template>
+            <template v-else>
+              {{ emptyText }}
+            </template>
+          </div>
         </div>
-      </div>
+      </Transition>
     </div>
 
     <span v-if="required && !label" class="shrink-0 text-input text-input-error" aria-hidden="true"

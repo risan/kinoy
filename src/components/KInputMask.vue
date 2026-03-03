@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onBeforeUnmount, useId } from 'vue';
-import { useField } from 'vee-validate';
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import IMask from 'imask';
 import type { InputMask, FactoryArg, UpdateOpts } from 'imask';
 import type { InputMaskProps } from '../types/form';
+import { useFormField } from '../composables/useFormField';
 
 defineOptions({
   name: 'KInputMask',
@@ -16,25 +16,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string];
 }>();
 
-const generatedId = useId();
-const inputId = computed(() => props.id ?? generatedId);
-const errorId = computed(() => `${inputId.value}-error`);
-const hintId = computed(() => `${inputId.value}-hint`);
-
-const field = props.name != null ? useField<string>(() => props.name!) : undefined;
-
-const resolvedError = computed(() => props.error || field?.errorMessage.value || undefined);
-
-const ariaDescribedBy = computed(() => {
-  const ids: string[] = [];
-  if (props.hint) {
-    ids.push(hintId.value);
-  }
-  if (resolvedError.value) {
-    ids.push(errorId.value);
-  }
-  return ids.length > 0 ? ids.join(' ') : undefined;
-});
+const { inputId, errorId, hintId, field, resolvedError, ariaDescribedBy } = useFormField(props);
 
 const inputRef = ref<HTMLInputElement | null>(null);
 let maskInstance: InputMask<FactoryArg> | null = null;

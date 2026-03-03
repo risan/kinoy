@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, useId } from 'vue';
-import { useField } from 'vee-validate';
+import { computed, ref } from 'vue';
 import type { InputFileProps } from '../types/form';
+import { useFormField } from '../composables/useFormField';
 import IconCloudArrowUp from '../icons/IconCloudArrowUp.vue';
 import IconFile from '../icons/IconFile.vue';
 import IconXMark from '../icons/IconXMark.vue';
@@ -14,32 +14,16 @@ defineOptions({
 const props = withDefaults(defineProps<InputFileProps>(), {});
 const emit = defineEmits<{ 'update:files': [files: File[]] }>();
 
-const generatedId = useId();
-const inputId = computed(() => props.id ?? generatedId);
-const errorId = computed(() => `${inputId.value}-error`);
-const hintId = computed(() => `${inputId.value}-hint`);
+const { inputId, errorId, hintId, field, resolvedError, ariaDescribedBy } =
+  useFormField<File[]>(props);
 
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const selectedFiles = ref<File[]>([]);
-
-const field = props.name != null ? useField<File[]>(() => props.name!) : undefined;
-const resolvedError = computed(() => props.error || field?.errorMessage.value || undefined);
 
 const isMaxReached = computed(
   () => props.maxFiles != null && selectedFiles.value.length >= props.maxFiles,
 );
 const isDisabled = computed(() => props.disabled || isMaxReached.value);
-
-const ariaDescribedBy = computed(() => {
-  const ids: string[] = [];
-  if (props.hint) {
-    ids.push(hintId.value);
-  }
-  if (resolvedError.value) {
-    ids.push(errorId.value);
-  }
-  return ids.length > 0 ? ids.join(' ') : undefined;
-});
 
 function updateFiles(newFiles: File[]) {
   selectedFiles.value = newFiles;
@@ -206,7 +190,7 @@ const formattedAccept = computed(() => {
             ? 'border-primary bg-primary/5 cursor-pointer'
             : resolvedError
               ? 'border-input-border-error hover:border-input-border-error focus:border-input-border-error focus:ring-2 focus:ring-input-ring-error cursor-pointer'
-              : 'border-input-border cursor-pointer hover:border-input-border-hover hover:bg-slate-50 focus:ring-2 focus:ring-input-ring focus:border-input-border-focus',
+              : 'border-input-border cursor-pointer hover:border-input-border-hover hover:bg-input-file-hover focus:ring-2 focus:ring-input-ring focus:border-input-border-focus',
       ]"
       @click="triggerFileInput"
       @keydown.enter.prevent="triggerFileInput"
@@ -256,7 +240,7 @@ const formattedAccept = computed(() => {
       <li
         v-for="(file, index) in selectedFiles"
         :key="index"
-        class="group flex items-center gap-2.5 rounded-input border border-input-border bg-input-bg px-3 py-2 text-input transition-colors duration-150 hover:bg-slate-50"
+        class="group flex items-center gap-2.5 rounded-input border border-input-border bg-input-bg px-3 py-2 text-input transition-colors duration-150 hover:bg-input-file-hover"
       >
         <IconFile class="h-4 w-4 shrink-0 text-input-placeholder" />
         <span class="truncate text-input-text min-w-0 flex-1">{{ file.name }}</span>
@@ -266,7 +250,7 @@ const formattedAccept = computed(() => {
         <button
           type="button"
           :aria-label="`Remove ${file.name}`"
-          class="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-input-placeholder transition-colors duration-150 hover:bg-red-100 hover:text-input-error"
+          class="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-input-placeholder transition-colors duration-150 hover:bg-input-clear-bg-hover hover:text-input-error"
           @click.stop="removeFile(index)"
         >
           <IconXMark class="h-3.5 w-3.5" />

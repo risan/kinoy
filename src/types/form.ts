@@ -150,7 +150,6 @@ export type AlertVariant = 'default' | 'success' | 'warning' | 'danger' | 'info'
 
 export interface AlertProps {
   variant?: AlertVariant;
-  icon?: string;
   title?: string;
   description?: string;
   dismissible?: boolean;

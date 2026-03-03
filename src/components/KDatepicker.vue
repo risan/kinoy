@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, useId } from 'vue';
-import { useField } from 'vee-validate';
+import { computed } from 'vue';
 import { VueDatePicker } from '@vuepic/vue-datepicker';
 import type { DatepickerProps, DatepickerValue } from '../types/form';
+import { useFormField } from '../composables/useFormField';
 import IconXMark from '../icons/IconXMark.vue';
 
 defineOptions({
@@ -18,12 +18,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: DatepickerValue];
 }>();
 
-const generatedId = useId();
-const inputId = computed(() => props.id ?? generatedId);
-const errorId = computed(() => `${inputId.value}-error`);
-const hintId = computed(() => `${inputId.value}-hint`);
-
-const field = props.name != null ? useField<DatepickerValue>(() => props.name!) : undefined;
+const { inputId, errorId, hintId, field, resolvedError, ariaDescribedBy } =
+  useFormField<DatepickerValue>(props);
 
 const datepickerValue = computed(() =>
   field ? (field.value.value ?? null) : (props.modelValue ?? null),
@@ -43,19 +39,6 @@ function onBlur() {
     field.validate();
   }
 }
-
-const resolvedError = computed(() => props.error || field?.errorMessage.value || undefined);
-
-const ariaDescribedBy = computed(() => {
-  const ids: string[] = [];
-  if (props.hint) {
-    ids.push(hintId.value);
-  }
-  if (resolvedError.value) {
-    ids.push(errorId.value);
-  }
-  return ids.length > 0 ? ids.join(' ') : undefined;
-});
 </script>
 
 <template>
@@ -104,6 +87,7 @@ const ariaDescribedBy = computed(() => {
               :disabled="disabled || undefined"
               :required="required || undefined"
               readonly
+              :aria-readonly="true"
               :placeholder="$attrs.placeholder as string"
               :aria-invalid="resolvedError ? true : undefined"
               :aria-describedby="ariaDescribedBy"
@@ -125,7 +109,7 @@ const ariaDescribedBy = computed(() => {
               v-if="datepickerValue != null && !disabled"
               type="button"
               aria-label="Clear date"
-              class="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-input-placeholder transition-colors duration-150 hover:bg-red-100 hover:text-input-error"
+              class="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-input-placeholder transition-colors duration-150 hover:bg-input-clear-bg-hover hover:text-input-error"
               tabindex="-1"
               @click.stop="onClear"
               @mousedown.prevent

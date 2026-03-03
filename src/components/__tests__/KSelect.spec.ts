@@ -74,6 +74,15 @@ describe('KSelect', () => {
       await wrapper.find('[role="combobox"]').trigger('keydown', { key: 'Escape' });
       expect(wrapper.find('[role="combobox"]').attributes('aria-expanded')).toBe('false');
     });
+
+    it('closes dropdown on Tab in single mode', async () => {
+      const wrapper = mount(KSelect, {
+        props: { options: ['Apple', 'Banana'] },
+      });
+      await openSelect(wrapper);
+      await wrapper.find('[role="combobox"]').trigger('keydown', { key: 'Tab' });
+      expect(wrapper.find('[role="combobox"]').attributes('aria-expanded')).toBe('false');
+    });
   });
 
   describe('single select', () => {
@@ -373,6 +382,28 @@ describe('KSelect', () => {
       await getOptions(wrapper)[0].trigger('mousedown');
       const baseSelect = wrapper.findComponent(KSelect);
       expect(baseSelect.emitted('update:modelValue')?.[0]).toEqual(['Apple']);
+    });
+
+    it('does not trigger blur validation when focus moves within the component', async () => {
+      const wrapper = mountWithForm(
+        KSelect,
+        schema,
+        'fruit',
+        {
+          options: ['Apple', 'Banana'],
+        },
+        undefined,
+      );
+      await openSelect(wrapper);
+      const combobox = wrapper.find('[role="combobox"]');
+      const searchInput = wrapper.find('input[type="text"]');
+
+      // Simulate blur with relatedTarget being the search input inside the component
+      await combobox.trigger('blur', {
+        relatedTarget: searchInput.element,
+      });
+      await flushValidation();
+      expect(wrapper.text()).not.toContain('Required');
     });
   });
 

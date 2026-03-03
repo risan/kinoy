@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, useAttrs } from 'vue';
+import { computed } from 'vue';
 import type { BadgeProps } from '../types/form';
 import IconXMark from '../icons/IconXMark.vue';
 
@@ -7,8 +7,6 @@ defineOptions({
   name: 'KBadge',
   inheritAttrs: false,
 });
-
-const attrs = useAttrs();
 
 const props = withDefaults(defineProps<BadgeProps>(), {
   variant: 'default',
@@ -69,7 +67,11 @@ const dotClasses = computed(() => {
 </script>
 
 <template>
-  <span v-bind="attrs" :class="[baseClasses, shapeClass, sizeClasses, variantClasses]" :role="role">
+  <span
+    v-bind="$attrs"
+    :class="[baseClasses, shapeClass, sizeClasses, variantClasses]"
+    :role="role"
+  >
     <span
       v-if="dot"
       data-testid="badge-dot"
@@ -83,8 +85,7 @@ const dotClasses = computed(() => {
       v-if="removable"
       type="button"
       :aria-label="removeLabel"
-      class="flex h-3.5 w-3.5 shrink-0 cursor-pointer items-center justify-center rounded text-badge-remove transition-colors duration-150 hover:bg-red-100 hover:text-badge-remove-hover"
-      tabindex="-1"
+      class="flex h-3.5 w-3.5 shrink-0 cursor-pointer items-center justify-center rounded text-badge-remove transition-colors duration-150 hover:bg-input-clear-bg-hover hover:text-badge-remove-hover focus-visible:ring-2 focus-visible:ring-input-ring focus:outline-none"
       @click.stop="emit('remove')"
       @mousedown.prevent
     >
