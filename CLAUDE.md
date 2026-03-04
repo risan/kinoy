@@ -1,4 +1,4 @@
-# Kinoy — Vue 3 Component Library
+# JBW UI — Vue 3 Component Library
 
 ## Package Manager
 Use **bun**, not npm or pnpm. All commands: `bun run build`, `bun run test:run`, `bun install`, etc.
@@ -9,8 +9,8 @@ Use **bun**, not npm or pnpm. All commands: `bun run build`, `bun run test:run`,
 - oxfmt config: `singleQuote: true` in `.oxfmtrc.json`.
 
 ## Component Conventions
-- All components use `K` prefix: `KInput`, `KSelect`, `KButton`, etc.
-- Every component must call `defineOptions({ name: 'KComponentName' })`.
+- All components use `J` prefix: `JInput`, `JSelect`, `JButton`, etc.
+- Every component must call `defineOptions({ name: 'JComponentName' })`.
 - Components that need `inheritAttrs: false` set it inside the same `defineOptions` call.
 - Attrs are manually bound with `v-bind="$attrs"` on the actual input/root element, not the wrapper div.
 
@@ -23,12 +23,12 @@ Use **bun**, not npm or pnpm. All commands: `bun run build`, `bun run test:run`,
 ## Theme & CSS
 - Uses **Tailwind CSS v4** `@theme { }` syntax for design tokens — not v3 `theme.extend` config.
 - All tokens are CSS custom properties inside `@theme {}` in `src/theme/default.css`.
-- Consumers import `kinoy/theme` and optionally `kinoy/theme/datepicker`.
+- Consumers import `@jbandassociates/jbw-ui/theme` and optionally `@jbandassociates/jbw-ui/theme/datepicker`.
 - Token namespaces: `--color-primary`, `--color-input-*`, `--color-select-*`, `--color-btn-*`, `--color-badge-*`, `--color-alert-*`, `--spacing-input-*`, `--radius-input`, `--font-size-input*`.
 
 ## Build
 - Vite library mode. Entry: `src/index.ts`.
-- Outputs: `dist/kinoy.js` (ESM), `dist/kinoy.cjs` (CJS), `dist/index.d.ts`, `dist/theme/*.css`.
+- Outputs: `dist/jbw-ui.js` (ESM), `dist/jbw-ui.cjs` (CJS), `dist/index.d.ts`, `dist/theme/*.css`.
 - Externals (not bundled): `vue`, `vee-validate`, `@vuepic/vue-datepicker`.
 - Everything else (imask, fuse.js, es-toolkit, @vueuse/core, vue-currency-input) is bundled.
 - Theme CSS is copied to dist via a custom Vite plugin in `vite.config.ts`, not processed by Vite's CSS pipeline.
@@ -46,8 +46,8 @@ Use **bun**, not npm or pnpm. All commands: `bun run build`, `bun run test:run`,
 - Storybook stories live in `stories/`, not inside `src/`.
 
 ## Architecture Notes
-- All 4 composables in `src/composables/` belong to KSelect only.
-- `KInputPhone` and `KInputZip` are zero-logic wrappers around `KInputMask` — no props, just a hardcoded mask in the template.
-- `KInputCurrency` wraps `KInputNumber`, not the other way around.
-- `KDatepicker` renders its own input via VueDatePicker's `#dp-input` slot — the input is readonly.
+- All 4 composables in `src/composables/` belong to JSelect only.
+- `JInputPhone` and `JInputZip` are zero-logic wrappers around `JInputMask` — no props, just a hardcoded mask in the template.
+- `JInputCurrency` wraps `JInputNumber`, not the other way around.
+- `JDatepicker` renders its own input via VueDatePicker's `#dp-input` slot — the input is readonly.
 - vee-validate integration is optional: components auto-connect when a `name` prop is provided.

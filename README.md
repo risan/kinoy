@@ -1,14 +1,25 @@
-# kinoy
+# @jbandassociates/jbw-ui
 
 A Vue 3 component library with Tailwind v4 theming.
+
+## Authentication
+
+Create a GitHub PAT (fine-grained) with `read:packages` scope for the `jbandassociates` org.
+
+Add to your project's `.npmrc`:
+
+```
+@jbandassociates:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
 
 ## Installation
 
 ```bash
-bun add kinoy
+bun add @jbandassociates/jbw-ui
 bun add vue tailwindcss         # required peers
 bun add vee-validate             # optional, for form validation
-bun add @vuepic/vue-datepicker   # optional, for KDatepicker
+bun add @vuepic/vue-datepicker   # optional, for JDatepicker
 ```
 
 ## Setup
@@ -16,19 +27,34 @@ bun add @vuepic/vue-datepicker   # optional, for KDatepicker
 ```css
 /* main.css */
 @import 'tailwindcss';
-@import 'kinoy/theme';
-@source "../node_modules/kinoy/dist";
+@import '@jbandassociates/jbw-ui/theme';
+@source "../node_modules/@jbandassociates/jbw-ui/dist";
 ```
 
 ## Usage
 
 ```vue
 <script setup>
-import { KButton, KInput } from 'kinoy'
+import { JButton, JInput } from '@jbandassociates/jbw-ui'
 </script>
 
 <template>
-  <KInput label="Name" v-model="name" />
-  <KButton variant="primary" label="Submit" />
+  <JInput label="Name" v-model="name" />
+  <JButton variant="primary" label="Submit" />
 </template>
+```
+
+Or global registration:
+
+```ts
+import { JbwUiPlugin } from '@jbandassociates/jbw-ui'
+app.use(JbwUiPlugin)
+```
+
+## CI Setup
+
+```yaml
+- run: bun install --frozen-lockfile
+  env:
+    GITHUB_TOKEN: ${{ secrets.JBW_UI_READ_TOKEN }}
 ```

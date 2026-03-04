@@ -1,19 +1,19 @@
 // Components
-export { default as KInput } from './components/KInput.vue';
-export { default as KInputMask } from './components/KInputMask.vue';
-export { default as KInputPhone } from './components/KInputPhone.vue';
-export { default as KInputZip } from './components/KInputZip.vue';
-export { default as KInputNumber } from './components/KInputNumber.vue';
-export { default as KInputCurrency } from './components/KInputCurrency.vue';
-export { default as KInputFile } from './components/KInputFile.vue';
-export { default as KInputAutocomplete } from './components/KInputAutocomplete.vue';
-export { default as KInputPlace } from './components/KInputPlace.vue';
-export { default as KSelect } from './components/KSelect.vue';
-export { default as KDatepicker } from './components/KDatepicker.vue';
-export { default as KButton } from './components/KButton.vue';
-export { default as KBadge } from './components/KBadge.vue';
-export { default as KAlert } from './components/KAlert.vue';
-export { default as KLoading } from './components/KLoading.vue';
+export { default as JInput } from './components/JInput.vue';
+export { default as JInputMask } from './components/JInputMask.vue';
+export { default as JInputPhone } from './components/JInputPhone.vue';
+export { default as JInputZip } from './components/JInputZip.vue';
+export { default as JInputNumber } from './components/JInputNumber.vue';
+export { default as JInputCurrency } from './components/JInputCurrency.vue';
+export { default as JInputFile } from './components/JInputFile.vue';
+export { default as JInputAutocomplete } from './components/JInputAutocomplete.vue';
+export { default as JInputPlace } from './components/JInputPlace.vue';
+export { default as JSelect } from './components/JSelect.vue';
+export { default as JDatepicker } from './components/JDatepicker.vue';
+export { default as JButton } from './components/JButton.vue';
+export { default as JBadge } from './components/JBadge.vue';
+export { default as JAlert } from './components/JAlert.vue';
+export { default as JLoading } from './components/JLoading.vue';
 
 // Icons
 export {
@@ -62,4 +62,4 @@ export type {
 } from './types/form';
 
 // Plugin
-export { KinoyPlugin } from './plugin';
+export { JbwUiPlugin } from './plugin';
