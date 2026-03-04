@@ -1,15 +1,15 @@
 {
-  "name": "kinoy",
+  "name": "@jbandassociates/jbw-ui",
   "version": "0.1.0",
   "type": "module",
-  "main": "./dist/kinoy.cjs",
-  "module": "./dist/kinoy.js",
+  "main": "./dist/jbw-ui.cjs",
+  "module": "./dist/jbw-ui.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/kinoy.js",
-      "require": "./dist/kinoy.cjs"
+      "import": "./dist/jbw-ui.js",
+      "require": "./dist/jbw-ui.cjs"
     },
     "./theme": "./dist/theme/default.css",
     "./theme/datepicker": "./dist/theme/datepicker.css"
@@ -22,6 +22,13 @@
   "sideEffects": [
     "*.css"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbandassociates/jbw-ui.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "dev": "vite --config dev/vite.config.ts",
     "build": "run-p type-check build-only",
@@ -35,7 +42,8 @@
     "format": "oxfmt src/",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run build",
+    "prepare": "husky"
   },
   "peerDependencies": {
     "tailwindcss": "^4.0.0",
@@ -77,7 +85,9 @@
     "eslint-plugin-oxlint": "~1.51.0",
     "eslint-plugin-storybook": "10.2.14",
     "eslint-plugin-vue": "~10.8.0",
+    "husky": "^9.1.7",
     "jsdom": "^28.1.0",
+    "lint-staged": "^16.3.2",
     "npm-run-all2": "^8.0.4",
     "oxfmt": "^0.36.0",
     "oxlint": "~1.51.0",
@@ -91,6 +101,16 @@
     "vue": "^3.5.29",
     "vue-tsc": "^3.2.5",
     "yup": "^1.7.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,vue,js,jsx}": [
+      "oxfmt",
+      "oxlint --fix",
+      "eslint --fix --cache"
+    ],
+    "*.css": [
+      "oxfmt"
+    ]
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

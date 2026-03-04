@@ -80,24 +80,40 @@ const primitiveOptions = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'];
 const validationSchema = yup.object({
   fullName: yup.string().required('Full name is required'),
   email: yup.string().required('Email is required').email('Enter a valid email address'),
-  phone: yup.string().required('Phone number is required').matches(/^\d{3}-\d{3}-\d{4}$/, 'Format: 555-123-4567'),
+  phone: yup
+    .string()
+    .required('Phone number is required')
+    .matches(/^\d{3}-\d{3}-\d{4}$/, 'Format: 555-123-4567'),
   salary: yup.number().required('Expected salary is required'),
-  zipCode: yup.string().required('ZIP code is required').matches(/^\d{5}(-\d{4})?$/, 'Format: 90210 or 90210-1234'),
+  zipCode: yup
+    .string()
+    .required('ZIP code is required')
+    .matches(/^\d{5}(-\d{4})?$/, 'Format: 90210 or 90210-1234'),
   country: yup.string().required('Country is required'),
-  departments: yup.array().min(1, 'Select at least one department').required('Department is required'),
+  departments: yup
+    .array()
+    .min(1, 'Select at least one department')
+    .required('Department is required'),
   skills: yup.array().min(1, 'Add at least one skill').required('Skills are required'),
   startDate: yup.date().required('Start date is required'),
-  employeeId: yup.string().required('Employee ID is required').matches(/^EMP-\d{4}-\d{4}$/, 'Format: EMP-0000-0000'),
+  employeeId: yup
+    .string()
+    .required('Employee ID is required')
+    .matches(/^EMP-\d{4}-\d{4}$/, 'Format: EMP-0000-0000'),
   photos: yup
     .array()
     .required('Upload at least one photo')
     .min(1, 'Upload at least one photo')
     .max(3, 'Maximum 3 photos allowed')
-    .test('fileSize', 'Each file must be under 5 MB', (files) =>
-      !files || files.every((f: File) => f.size <= 5 * 1024 * 1024),
+    .test(
+      'fileSize',
+      'Each file must be under 5 MB',
+      (files) => !files || files.every((f: File) => f.size <= 5 * 1024 * 1024),
     )
-    .test('fileType', 'Only image files are allowed', (files) =>
-      !files || files.every((f: File) => f.type.startsWith('image/')),
+    .test(
+      'fileType',
+      'Only image files are allowed',
+      (files) => !files || files.every((f: File) => f.type.startsWith('image/')),
     ),
 });
 
@@ -115,47 +131,22 @@ const onSubmit = handleSubmit((values) => {
 
 <template>
   <div class="mx-auto max-w-2xl space-y-8 p-8">
-    <h1 class="text-2xl font-bold">Kinoy Dev Playground</h1>
+    <h1 class="text-2xl font-bold">JBW UI Dev Playground</h1>
 
     <form class="space-y-4" novalidate @submit.prevent="onSubmit">
       <h2 class="text-lg font-semibold">New Employee Registration</h2>
 
-      <KInput
-        name="fullName"
-        label="Full Name"
-        placeholder="John Doe"
-        required
-      />
+      <JInput name="fullName" label="Full Name" placeholder="John Doe" required />
 
-      <KInput
-        name="email"
-        label="Email Address"
-        placeholder="john.doe@company.com"
-        required
-      />
+      <JInput name="email" label="Email Address" placeholder="john.doe@company.com" required />
 
-      <KInputPhone
-        name="phone"
-        label="Phone Number"
-        placeholder="555-123-4567"
-        required
-      />
+      <JInputPhone name="phone" label="Phone Number" placeholder="555-123-4567" required />
 
-      <KInputCurrency
-        name="salary"
-        label="Expected Salary"
-        placeholder="75,000"
-        required
-      />
+      <JInputCurrency name="salary" label="Expected Salary" placeholder="75,000" required />
 
-      <KInputZip
-        name="zipCode"
-        label="ZIP Code"
-        placeholder="90210"
-        required
-      />
+      <JInputZip name="zipCode" label="ZIP Code" placeholder="90210" required />
 
-      <KSelect
+      <JSelect
         name="country"
         :options="countryOptions"
         option-value="value"
@@ -166,7 +157,7 @@ const onSubmit = handleSubmit((values) => {
         required
       />
 
-      <KSelect
+      <JSelect
         name="departments"
         :options="departmentOptions"
         option-value="value"
@@ -178,7 +169,7 @@ const onSubmit = handleSubmit((values) => {
         required
       />
 
-      <KSelect
+      <JSelect
         name="skills"
         :options="skillOptions"
         option-value="value"
@@ -191,14 +182,9 @@ const onSubmit = handleSubmit((values) => {
         required
       />
 
-      <KDatepicker
-        name="startDate"
-        label="Start Date"
-        placeholder="Pick a start date"
-        required
-      />
+      <JDatepicker name="startDate" label="Start Date" placeholder="Pick a start date" required />
 
-      <KInputMask
+      <JInputMask
         name="employeeId"
         label="Employee ID"
         placeholder="EMP-0000-0000"
@@ -206,7 +192,7 @@ const onSubmit = handleSubmit((values) => {
         required
       />
 
-      <KInputFile
+      <JInputFile
         name="photos"
         label="Photos"
         accept="image/*"
@@ -216,7 +202,7 @@ const onSubmit = handleSubmit((values) => {
         required
       />
 
-      <KButton type="submit" label="Register Employee" />
+      <JButton type="submit" label="Register Employee" />
 
       <p v-if="submitted" class="text-sm text-green-600">Employee registered successfully!</p>
     </form>
@@ -224,45 +210,50 @@ const onSubmit = handleSubmit((values) => {
     <hr class="border-slate-200" />
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KInput                                          -->
+    <!--  JInput                                          -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KInput</h2>
+      <h2 class="text-lg font-semibold">JInput</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Default (text)</h3>
-      <KInput v-model="text" label="Name" placeholder="Enter your name" hint="Your full name" />
+      <JInput v-model="text" label="Name" placeholder="Enter your name" hint="Your full name" />
       <p class="text-sm text-gray-500">Value: {{ text }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">type="email"</h3>
-      <KInput v-model="emailText" type="email" label="Email" placeholder="john@example.com" />
+      <JInput v-model="emailText" type="email" label="Email" placeholder="john@example.com" />
 
       <h3 class="text-sm font-medium text-gray-400">type="password"</h3>
-      <KInput v-model="passwordText" type="password" label="Password" placeholder="Enter password" />
+      <JInput
+        v-model="passwordText"
+        type="password"
+        label="Password"
+        placeholder="Enter password"
+      />
 
       <h3 class="text-sm font-medium text-gray-400">type="search"</h3>
-      <KInput v-model="searchText" type="search" label="Search" placeholder="Search..." />
+      <JInput v-model="searchText" type="search" label="Search" placeholder="Search..." />
 
       <h3 class="text-sm font-medium text-gray-400">Required (no label)</h3>
-      <KInput placeholder="Required field without label" required />
+      <JInput placeholder="Required field without label" required />
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KInput label="Disabled Input" placeholder="Cannot type here" disabled />
+      <JInput label="Disabled Input" placeholder="Cannot type here" disabled />
 
       <h3 class="text-sm font-medium text-gray-400">With error</h3>
-      <KInput label="Username" placeholder="Choose a username" error="Username is already taken" />
+      <JInput label="Username" placeholder="Choose a username" error="Username is already taken" />
 
       <h3 class="text-sm font-medium text-gray-400">With hint + required</h3>
-      <KInput label="Full Name" placeholder="John Doe" hint="First and last name" required />
+      <JInput label="Full Name" placeholder="John Doe" hint="First and last name" required />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KInputMask                                      -->
+    <!--  JInputMask                                      -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KInputMask</h2>
+      <h2 class="text-lg font-semibold">JInputMask</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Pattern mask (masked value)</h3>
-      <KInputMask
+      <JInputMask
         v-model="maskedValue"
         label="Employee ID"
         placeholder="EMP-0000-0000"
@@ -272,7 +263,7 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Masked: {{ maskedValue }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">unmask=true (raw value)</h3>
-      <KInputMask
+      <JInputMask
         v-model="unmaskedValue"
         label="SSN"
         placeholder="000-00-0000"
@@ -282,7 +273,7 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Unmasked: {{ unmaskedValue }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KInputMask
+      <JInputMask
         label="Disabled Mask"
         placeholder="XX-0000"
         :mask="{ mask: 'aa-0000' }"
@@ -290,7 +281,7 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">With error</h3>
-      <KInputMask
+      <JInputMask
         label="License Plate"
         placeholder="ABC-1234"
         :mask="{ mask: 'aaa-0000' }"
@@ -298,86 +289,86 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">Required</h3>
-      <KInputMask
-        label="Code"
-        placeholder="000-000"
-        :mask="{ mask: '000-000' }"
-        required
-      />
+      <JInputMask label="Code" placeholder="000-000" :mask="{ mask: '000-000' }" required />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KInputPhone                                     -->
+    <!--  JInputPhone                                     -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KInputPhone</h2>
+      <h2 class="text-lg font-semibold">JInputPhone</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Default</h3>
-      <KInputPhone v-model="phoneValue" label="Phone Number" placeholder="555-123-4567" />
+      <JInputPhone v-model="phoneValue" label="Phone Number" placeholder="555-123-4567" />
       <p class="text-sm text-gray-500">Value: {{ phoneValue }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KInputPhone label="Phone" placeholder="555-123-4567" disabled />
+      <JInputPhone label="Phone" placeholder="555-123-4567" disabled />
 
       <h3 class="text-sm font-medium text-gray-400">With error + required</h3>
-      <KInputPhone label="Phone" placeholder="555-123-4567" error="Phone number is required" required />
+      <JInputPhone
+        label="Phone"
+        placeholder="555-123-4567"
+        error="Phone number is required"
+        required
+      />
 
       <h3 class="text-sm font-medium text-gray-400">With hint</h3>
-      <KInputPhone label="Mobile" placeholder="555-123-4567" hint="US phone numbers only" />
+      <JInputPhone label="Mobile" placeholder="555-123-4567" hint="US phone numbers only" />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KInputZip                                       -->
+    <!--  JInputZip                                       -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KInputZip</h2>
+      <h2 class="text-lg font-semibold">JInputZip</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Default</h3>
-      <KInputZip v-model="zipValue" label="ZIP Code" placeholder="90210" />
+      <JInputZip v-model="zipValue" label="ZIP Code" placeholder="90210" />
       <p class="text-sm text-gray-500">Value: {{ zipValue }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KInputZip label="ZIP Code" placeholder="90210" disabled />
+      <JInputZip label="ZIP Code" placeholder="90210" disabled />
 
       <h3 class="text-sm font-medium text-gray-400">With error</h3>
-      <KInputZip label="ZIP Code" placeholder="90210" error="Invalid ZIP code" />
+      <JInputZip label="ZIP Code" placeholder="90210" error="Invalid ZIP code" />
 
       <h3 class="text-sm font-medium text-gray-400">Required + hint</h3>
-      <KInputZip label="ZIP Code" placeholder="90210" hint="5-digit or ZIP+4" required />
+      <JInputZip label="ZIP Code" placeholder="90210" hint="5-digit or ZIP+4" required />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KInputNumber                                    -->
+    <!--  JInputNumber                                    -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KInputNumber</h2>
+      <h2 class="text-lg font-semibold">JInputNumber</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Default (USD hidden)</h3>
-      <KInputNumber v-model="numberValue" label="Quantity" placeholder="0" />
+      <JInputNumber v-model="numberValue" label="Quantity" placeholder="0" />
       <p class="text-sm text-gray-500">Value: {{ numberValue }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KInputNumber label="Amount" placeholder="0" disabled />
+      <JInputNumber label="Amount" placeholder="0" disabled />
 
       <h3 class="text-sm font-medium text-gray-400">With error</h3>
-      <KInputNumber label="Budget" placeholder="0" error="Budget must be positive" />
+      <JInputNumber label="Budget" placeholder="0" error="Budget must be positive" />
 
       <h3 class="text-sm font-medium text-gray-400">Required + hint</h3>
-      <KInputNumber label="Score" placeholder="0" hint="Enter a number between 1-100" required />
+      <JInputNumber label="Score" placeholder="0" hint="Enter a number between 1-100" required />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KInputCurrency                                  -->
+    <!--  JInputCurrency                                  -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KInputCurrency</h2>
+      <h2 class="text-lg font-semibold">JInputCurrency</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Default (USD, symbol)</h3>
-      <KInputCurrency v-model="currencyValue" label="Salary" placeholder="75,000" />
+      <JInputCurrency v-model="currencyValue" label="Salary" placeholder="75,000" />
       <p class="text-sm text-gray-500">Value: {{ currencyValue }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">EUR, narrowSymbol display</h3>
-      <KInputCurrency
+      <JInputCurrency
         v-model="currencyEUR"
         label="Price (EUR)"
         placeholder="1,000"
@@ -388,10 +379,10 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Value: {{ currencyEUR }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Code display</h3>
-      <KInputCurrency label="Amount" placeholder="0" currency="GBP" currency-display="code" />
+      <JInputCurrency label="Amount" placeholder="0" currency="GBP" currency-display="code" />
 
       <h3 class="text-sm font-medium text-gray-400">Hidden symbol, no hide on focus</h3>
-      <KInputCurrency
+      <JInputCurrency
         label="Amount"
         placeholder="0"
         currency-display="hidden"
@@ -399,56 +390,55 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KInputCurrency label="Revenue" placeholder="0" disabled />
+      <JInputCurrency label="Revenue" placeholder="0" disabled />
 
       <h3 class="text-sm font-medium text-gray-400">With error + required</h3>
-      <KInputCurrency label="Budget" placeholder="0" error="Budget is required" required />
+      <JInputCurrency label="Budget" placeholder="0" error="Budget is required" required />
 
       <h3 class="text-sm font-medium text-gray-400">With hint</h3>
-      <KInputCurrency label="Donation" placeholder="0" hint="Minimum $10" />
+      <JInputCurrency label="Donation" placeholder="0" hint="Minimum $10" />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KInputFile                                      -->
+    <!--  JInputFile                                      -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KInputFile</h2>
+      <h2 class="text-lg font-semibold">JInputFile</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Single file</h3>
-      <KInputFile label="Avatar" accept="image/*" hint="Upload a profile picture" />
+      <JInputFile label="Avatar" accept="image/*" hint="Upload a profile picture" />
 
       <h3 class="text-sm font-medium text-gray-400">Multiple files</h3>
-      <KInputFile label="Documents" accept=".pdf,.doc,.docx" multiple hint="PDF or Word files" />
+      <JInputFile label="Documents" accept=".pdf,.doc,.docx" multiple hint="PDF or Word files" />
 
       <h3 class="text-sm font-medium text-gray-400">Multiple with maxFiles</h3>
-      <KInputFile
-        label="Photos"
-        accept="image/*"
-        multiple
-        :max-files="3"
-        hint="Up to 3 images"
-      />
+      <JInputFile label="Photos" accept="image/*" multiple :max-files="3" hint="Up to 3 images" />
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KInputFile label="Uploads Disabled" disabled />
+      <JInputFile label="Uploads Disabled" disabled />
 
       <h3 class="text-sm font-medium text-gray-400">With error + required</h3>
-      <KInputFile label="Resume" accept=".pdf" error="Please upload your resume" required />
+      <JInputFile label="Resume" accept=".pdf" error="Please upload your resume" required />
 
       <h3 class="text-sm font-medium text-gray-400">No accept filter</h3>
-      <KInputFile label="Any File" hint="All file types accepted" />
+      <JInputFile label="Any File" hint="All file types accepted" />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KInputPlace                                      -->
+    <!--  JInputPlace                                      -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KInputPlace</h2>
+      <h2 class="text-lg font-semibold">JInputPlace</h2>
 
-      <KInput v-model="placeApiKey" label="Google Maps API Key" placeholder="Paste your API key here" hint="Required for Places autocomplete to work" />
+      <JInput
+        v-model="placeApiKey"
+        label="Google Maps API Key"
+        placeholder="Paste your API key here"
+        hint="Required for Places autocomplete to work"
+      />
 
       <h3 class="text-sm font-medium text-gray-400">Default (full address)</h3>
-      <KInputPlace
+      <JInputPlace
         v-model="placeValue"
         :api-key="placeApiKey"
         label="Address"
@@ -461,7 +451,7 @@ const onSubmit = handleSubmit((values) => {
       </p>
 
       <h3 class="text-sm font-medium text-gray-400">streetAddressOnly</h3>
-      <KInputPlace
+      <JInputPlace
         v-model="placeStreetOnly"
         :api-key="placeApiKey"
         label="Street Address"
@@ -471,10 +461,10 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Value: {{ placeStreetOnly }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KInputPlace label="Address (disabled)" placeholder="Cannot type here" disabled />
+      <JInputPlace label="Address (disabled)" placeholder="Cannot type here" disabled />
 
       <h3 class="text-sm font-medium text-gray-400">With error + required</h3>
-      <KInputPlace
+      <JInputPlace
         :api-key="placeApiKey"
         label="Address"
         placeholder="Start typing..."
@@ -483,7 +473,7 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">With hint</h3>
-      <KInputPlace
+      <JInputPlace
         :api-key="placeApiKey"
         label="Shipping Address"
         placeholder="Start typing..."
@@ -493,13 +483,13 @@ const onSubmit = handleSubmit((values) => {
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KSelect                                         -->
+    <!--  JSelect                                         -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KSelect</h2>
+      <h2 class="text-lg font-semibold">JSelect</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Single (local search)</h3>
-      <KSelect
+      <JSelect
         v-model="selected"
         :options="countryOptions"
         option-value="value"
@@ -511,7 +501,7 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Value: {{ selected }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Multiple</h3>
-      <KSelect
+      <JSelect
         v-model="selectedMultiple"
         :options="departmentOptions"
         option-value="value"
@@ -524,7 +514,7 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Value: {{ selectedMultiple }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Tags (with createOption)</h3>
-      <KSelect
+      <JSelect
         v-model="selectedTags"
         :options="skillOptions"
         option-value="value"
@@ -538,7 +528,7 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Value: {{ selectedTags }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Grouped (groupBy)</h3>
-      <KSelect
+      <JSelect
         v-model="selectedGrouped"
         :options="groupedOptions"
         option-value="value"
@@ -551,7 +541,7 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Value: {{ selectedGrouped }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">canDeselect</h3>
-      <KSelect
+      <JSelect
         v-model="selectedDeselect"
         :options="countryOptions"
         option-value="value"
@@ -564,7 +554,7 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Value: {{ selectedDeselect }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">disableSearch</h3>
-      <KSelect
+      <JSelect
         v-model="selectedNoSearch"
         :options="countryOptions"
         option-value="value"
@@ -576,7 +566,7 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">hideClear</h3>
-      <KSelect
+      <JSelect
         v-model="selectedHideClear"
         :options="countryOptions"
         option-value="value"
@@ -588,7 +578,7 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">objectValue</h3>
-      <KSelect
+      <JSelect
         v-model="selectedObject"
         :options="countryOptions"
         option-value="value"
@@ -601,15 +591,10 @@ const onSubmit = handleSubmit((values) => {
       <p class="text-sm text-gray-500">Value: {{ JSON.stringify(selectedObject) }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">Primitive string options</h3>
-      <KSelect
-        :options="primitiveOptions"
-        label="Fruit"
-        placeholder="Pick a fruit"
-        local
-      />
+      <JSelect :options="primitiveOptions" label="Fruit" placeholder="Pick a fruit" local />
 
       <h3 class="text-sm font-medium text-gray-400">Custom emptyText</h3>
-      <KSelect
+      <JSelect
         :options="[]"
         label="Empty"
         placeholder="No options"
@@ -618,7 +603,7 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">Loading</h3>
-      <KSelect
+      <JSelect
         :options="[]"
         label="Loading State"
         placeholder="Fetching options..."
@@ -627,7 +612,7 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KSelect
+      <JSelect
         :options="countryOptions"
         option-value="value"
         option-label="label"
@@ -638,7 +623,7 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">With error + required</h3>
-      <KSelect
+      <JSelect
         :options="countryOptions"
         option-value="value"
         option-label="label"
@@ -650,7 +635,7 @@ const onSubmit = handleSubmit((values) => {
       />
 
       <h3 class="text-sm font-medium text-gray-400">With hint</h3>
-      <KSelect
+      <JSelect
         :options="countryOptions"
         option-value="value"
         option-label="label"
@@ -662,192 +647,208 @@ const onSubmit = handleSubmit((values) => {
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KDatepicker                                     -->
+    <!--  JDatepicker                                     -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KDatepicker</h2>
+      <h2 class="text-lg font-semibold">JDatepicker</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Default (autoApply=true)</h3>
-      <KDatepicker v-model="date" label="Date" placeholder="Pick a date" />
+      <JDatepicker v-model="date" label="Date" placeholder="Pick a date" />
       <p class="text-sm text-gray-500">Value: {{ date }}</p>
 
       <h3 class="text-sm font-medium text-gray-400">autoApply=false</h3>
-      <KDatepicker label="Date (confirm)" placeholder="Pick a date" :auto-apply="false" />
+      <JDatepicker label="Date (confirm)" placeholder="Pick a date" :auto-apply="false" />
 
       <h3 class="text-sm font-medium text-gray-400">Disabled</h3>
-      <KDatepicker label="Date (disabled)" placeholder="Pick a date" disabled />
+      <JDatepicker label="Date (disabled)" placeholder="Pick a date" disabled />
 
       <h3 class="text-sm font-medium text-gray-400">With error</h3>
-      <KDatepicker label="Start Date" placeholder="Pick a date" error="Start date is required" />
+      <JDatepicker label="Start Date" placeholder="Pick a date" error="Start date is required" />
 
       <h3 class="text-sm font-medium text-gray-400">Required + hint</h3>
-      <KDatepicker label="Birthday" placeholder="Pick your birthday" hint="Must be 18 or older" required />
+      <JDatepicker
+        label="Birthday"
+        placeholder="Pick your birthday"
+        hint="Must be 18 or older"
+        required
+      />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KButton                                         -->
+    <!--  JButton                                         -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KButton</h2>
+      <h2 class="text-lg font-semibold">JButton</h2>
 
       <h3 class="text-sm font-medium text-gray-400">All variants</h3>
       <div class="flex flex-wrap gap-2">
-        <KButton variant="default" label="Default" />
-        <KButton variant="primary" label="Primary" />
-        <KButton variant="secondary" label="Secondary" />
-        <KButton variant="success" label="Success" />
-        <KButton variant="warning" label="Warning" />
-        <KButton variant="danger" label="Danger" />
-        <KButton variant="info" label="Info" />
-        <KButton variant="outline" label="Outline" />
-        <KButton variant="ghost" label="Ghost" />
+        <JButton variant="default" label="Default" />
+        <JButton variant="primary" label="Primary" />
+        <JButton variant="secondary" label="Secondary" />
+        <JButton variant="success" label="Success" />
+        <JButton variant="warning" label="Warning" />
+        <JButton variant="danger" label="Danger" />
+        <JButton variant="info" label="Info" />
+        <JButton variant="outline" label="Outline" />
+        <JButton variant="ghost" label="Ghost" />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Sizes</h3>
       <div class="flex items-start flex-wrap gap-2">
-        <KButton variant="primary" label="Small" size="sm" />
-        <KButton variant="primary" label="Medium" size="md" />
-        <KButton variant="primary" label="Large" size="lg" />
+        <JButton variant="primary" label="Small" size="sm" />
+        <JButton variant="primary" label="Medium" size="md" />
+        <JButton variant="primary" label="Large" size="lg" />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Disabled (all variants)</h3>
       <div class="flex flex-wrap gap-2">
-        <KButton variant="primary" label="Disabled" disabled />
-        <KButton variant="outline" label="Disabled Outline" disabled />
-        <KButton variant="ghost" label="Disabled Ghost" disabled />
+        <JButton variant="primary" label="Disabled" disabled />
+        <JButton variant="outline" label="Disabled Outline" disabled />
+        <JButton variant="ghost" label="Disabled Ghost" disabled />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Loading</h3>
       <div class="flex flex-wrap gap-2">
-        <KButton variant="primary" label="Loading" loading />
-        <KButton variant="primary" label="Custom Label" loading loading-label="Saving..." />
+        <JButton variant="primary" label="Loading" loading />
+        <JButton variant="primary" label="Custom Label" loading loading-label="Saving..." />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Button types</h3>
       <div class="flex flex-wrap gap-2">
-        <KButton type="button" label="type=button" />
-        <KButton type="submit" label="type=submit" />
-        <KButton type="reset" label="type=reset" />
+        <JButton type="button" label="type=button" />
+        <JButton type="submit" label="type=submit" />
+        <JButton type="reset" label="type=reset" />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">As link (href)</h3>
-      <KButton variant="primary" label="Visit Example" href="https://example.com" />
+      <JButton variant="primary" label="Visit Example" href="https://example.com" />
 
       <h3 class="text-sm font-medium text-gray-400">Link disabled</h3>
-      <KButton variant="primary" label="Disabled Link" href="https://example.com" disabled />
+      <JButton variant="primary" label="Disabled Link" href="https://example.com" disabled />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KBadge                                          -->
+    <!--  JBadge                                          -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KBadge</h2>
+      <h2 class="text-lg font-semibold">JBadge</h2>
 
       <h3 class="text-sm font-medium text-gray-400">All variants</h3>
       <div class="flex flex-wrap gap-2">
-        <KBadge label="Default" />
-        <KBadge variant="primary" label="Primary" />
-        <KBadge variant="secondary" label="Secondary" />
-        <KBadge variant="success" label="Success" />
-        <KBadge variant="warning" label="Warning" />
-        <KBadge variant="danger" label="Danger" />
-        <KBadge variant="info" label="Info" />
-        <KBadge variant="outline" label="Outline" />
-        <KBadge variant="ghost" label="Ghost" />
+        <JBadge label="Default" />
+        <JBadge variant="primary" label="Primary" />
+        <JBadge variant="secondary" label="Secondary" />
+        <JBadge variant="success" label="Success" />
+        <JBadge variant="warning" label="Warning" />
+        <JBadge variant="danger" label="Danger" />
+        <JBadge variant="info" label="Info" />
+        <JBadge variant="outline" label="Outline" />
+        <JBadge variant="ghost" label="Ghost" />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Sizes</h3>
       <div class="flex items-start flex-wrap gap-2">
-        <KBadge variant="primary" label="Small" size="sm" />
-        <KBadge variant="primary" label="Medium" size="md" />
-        <KBadge variant="primary" label="Large" size="lg" />
+        <JBadge variant="primary" label="Small" size="sm" />
+        <JBadge variant="primary" label="Medium" size="md" />
+        <JBadge variant="primary" label="Large" size="lg" />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Pill shape</h3>
       <div class="flex flex-wrap gap-2">
-        <KBadge label="Default Pill" pill />
-        <KBadge variant="primary" label="Primary Pill" pill />
-        <KBadge variant="success" label="Success Pill" pill />
+        <JBadge label="Default Pill" pill />
+        <JBadge variant="primary" label="Primary Pill" pill />
+        <JBadge variant="success" label="Success Pill" pill />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Dot indicator</h3>
       <div class="flex flex-wrap gap-2">
-        <KBadge variant="primary" label="Active" dot />
-        <KBadge variant="success" label="Online" dot />
-        <KBadge variant="danger" label="Error" dot />
-        <KBadge variant="warning" label="Pending" dot />
+        <JBadge variant="primary" label="Active" dot />
+        <JBadge variant="success" label="Online" dot />
+        <JBadge variant="danger" label="Error" dot />
+        <JBadge variant="warning" label="Pending" dot />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Removable</h3>
       <div class="flex flex-wrap gap-2">
-        <KBadge variant="primary" label="Tag 1" removable />
-        <KBadge variant="success" label="Tag 2" removable remove-label="Delete tag 2" />
+        <JBadge variant="primary" label="Tag 1" removable />
+        <JBadge variant="success" label="Tag 2" removable remove-label="Delete tag 2" />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Combined: pill + dot + removable</h3>
       <div class="flex flex-wrap gap-2">
-        <KBadge variant="warning" label="Warning" pill dot removable />
-        <KBadge variant="info" label="Note" pill dot removable />
+        <JBadge variant="warning" label="Warning" pill dot removable />
+        <JBadge variant="info" label="Note" pill dot removable />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">With role</h3>
-      <KBadge variant="danger" label="3 errors" role="status" />
+      <JBadge variant="danger" label="3 errors" role="status" />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KAlert                                          -->
+    <!--  JAlert                                          -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KAlert</h2>
+      <h2 class="text-lg font-semibold">JAlert</h2>
 
       <h3 class="text-sm font-medium text-gray-400">All variants</h3>
-      <KAlert title="Default" description="This is a default alert." />
-      <KAlert variant="success" title="Success" description="Operation completed successfully." />
-      <KAlert variant="warning" title="Warning" description="Please review this carefully." />
-      <KAlert variant="danger" title="Danger" description="Something went wrong." />
-      <KAlert variant="info" title="Info" description="Here is some useful information." />
+      <JAlert title="Default" description="This is a default alert." />
+      <JAlert variant="success" title="Success" description="Operation completed successfully." />
+      <JAlert variant="warning" title="Warning" description="Please review this carefully." />
+      <JAlert variant="danger" title="Danger" description="Something went wrong." />
+      <JAlert variant="info" title="Info" description="Here is some useful information." />
 
       <h3 class="text-sm font-medium text-gray-400">Dismissible</h3>
-      <KAlert variant="success" title="Dismissible" description="You can close this alert." dismissible />
+      <JAlert
+        variant="success"
+        title="Dismissible"
+        description="You can close this alert."
+        dismissible
+      />
 
       <h3 class="text-sm font-medium text-gray-400">Dismissible with custom closeLabel</h3>
-      <KAlert variant="warning" title="Custom Close" description="Custom close button label." dismissible close-label="Dismiss this alert" />
+      <JAlert
+        variant="warning"
+        title="Custom Close"
+        description="Custom close button label."
+        dismissible
+        close-label="Dismiss this alert"
+      />
 
       <h3 class="text-sm font-medium text-gray-400">Title only</h3>
-      <KAlert variant="info" title="Just a title, no description" />
+      <JAlert variant="info" title="Just a title, no description" />
 
       <h3 class="text-sm font-medium text-gray-400">Description only</h3>
-      <KAlert variant="danger" description="Just a description, no title." />
+      <JAlert variant="danger" description="Just a description, no title." />
     </section>
 
     <!-- ════════════════════════════════════════════════ -->
-    <!--  KLoading                                        -->
+    <!--  JLoading                                        -->
     <!-- ════════════════════════════════════════════════ -->
     <section class="space-y-4">
-      <h2 class="text-lg font-semibold">KLoading</h2>
+      <h2 class="text-lg font-semibold">JLoading</h2>
 
       <h3 class="text-sm font-medium text-gray-400">Sizes</h3>
       <div class="flex items-center gap-4">
-        <KLoading size="xs" />
-        <KLoading size="sm" />
-        <KLoading size="md" />
-        <KLoading size="lg" />
+        <JLoading size="xs" />
+        <JLoading size="sm" />
+        <JLoading size="md" />
+        <JLoading size="lg" />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">Colors</h3>
       <div class="flex items-center gap-4">
-        <KLoading size="md" color="current" />
-        <KLoading size="md" color="primary" />
-        <KLoading size="md" color="muted" />
+        <JLoading size="md" color="current" />
+        <JLoading size="md" color="primary" />
+        <JLoading size="md" color="muted" />
       </div>
 
       <h3 class="text-sm font-medium text-gray-400">With custom label</h3>
-      <KLoading size="sm" color="primary" label="Fetching data..." />
+      <JLoading size="sm" color="primary" label="Fetching data..." />
 
       <h3 class="text-sm font-medium text-gray-400">Overlay</h3>
       <div class="relative h-32 w-full rounded-lg border border-slate-200 bg-white p-4">
         <p class="text-sm text-gray-500">Content underneath the overlay</p>
-        <KLoading size="lg" color="primary" label="Loading content..." overlay />
+        <JLoading size="lg" color="primary" label="Loading content..." overlay />
       </div>
     </section>
   </div>

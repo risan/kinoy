@@ -1,37 +1,37 @@
 import type { App, Plugin } from 'vue';
 
-import KInput from './components/KInput.vue';
-import KInputMask from './components/KInputMask.vue';
-import KInputPhone from './components/KInputPhone.vue';
-import KInputZip from './components/KInputZip.vue';
-import KInputNumber from './components/KInputNumber.vue';
-import KInputCurrency from './components/KInputCurrency.vue';
-import KInputFile from './components/KInputFile.vue';
-import KInputAutocomplete from './components/KInputAutocomplete.vue';
-import KInputPlace from './components/KInputPlace.vue';
-import KSelect from './components/KSelect.vue';
-import KDatepicker from './components/KDatepicker.vue';
-import KButton from './components/KButton.vue';
-import KBadge from './components/KBadge.vue';
-import KAlert from './components/KAlert.vue';
-import KLoading from './components/KLoading.vue';
+import JInput from './components/JInput.vue';
+import JInputMask from './components/JInputMask.vue';
+import JInputPhone from './components/JInputPhone.vue';
+import JInputZip from './components/JInputZip.vue';
+import JInputNumber from './components/JInputNumber.vue';
+import JInputCurrency from './components/JInputCurrency.vue';
+import JInputFile from './components/JInputFile.vue';
+import JInputAutocomplete from './components/JInputAutocomplete.vue';
+import JInputPlace from './components/JInputPlace.vue';
+import JSelect from './components/JSelect.vue';
+import JDatepicker from './components/JDatepicker.vue';
+import JButton from './components/JButton.vue';
+import JBadge from './components/JBadge.vue';
+import JAlert from './components/JAlert.vue';
+import JLoading from './components/JLoading.vue';
 
-export const KinoyPlugin: Plugin = {
+export const JbwUiPlugin: Plugin = {
   install(app: App) {
-    app.component('KInput', KInput);
-    app.component('KInputMask', KInputMask);
-    app.component('KInputPhone', KInputPhone);
-    app.component('KInputZip', KInputZip);
-    app.component('KInputNumber', KInputNumber);
-    app.component('KInputCurrency', KInputCurrency);
-    app.component('KInputFile', KInputFile);
-    app.component('KInputAutocomplete', KInputAutocomplete);
-    app.component('KInputPlace', KInputPlace);
-    app.component('KSelect', KSelect);
-    app.component('KDatepicker', KDatepicker);
-    app.component('KButton', KButton);
-    app.component('KBadge', KBadge);
-    app.component('KAlert', KAlert);
-    app.component('KLoading', KLoading);
+    app.component('JInput', JInput);
+    app.component('JInputMask', JInputMask);
+    app.component('JInputPhone', JInputPhone);
+    app.component('JInputZip', JInputZip);
+    app.component('JInputNumber', JInputNumber);
+    app.component('JInputCurrency', JInputCurrency);
+    app.component('JInputFile', JInputFile);
+    app.component('JInputAutocomplete', JInputAutocomplete);
+    app.component('JInputPlace', JInputPlace);
+    app.component('JSelect', JSelect);
+    app.component('JDatepicker', JDatepicker);
+    app.component('JButton', JButton);
+    app.component('JBadge', JBadge);
+    app.component('JAlert', JAlert);
+    app.component('JLoading', JLoading);
   },
 };
